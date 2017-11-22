@@ -80,13 +80,14 @@ with tf.Session() as sess:
             x = trX[begin:end]
             y = trY[begin:end]
             train_loss, _ = sess.run([loss, train_op], feed_dict={X: x, Y: y})
+        if i % 10 == 0:
             test_indices = np.arange(len(teX))
             np.random.shuffle(test_indices)
             test_indices = test_indices[0:test_size]
             trX_sliced, trY_sliced = [], []
             for t in test_indices:
-                trX_sliced.append(trX[t])
-                trY_sliced.append(trY[t])
+                trX_sliced.append(teX[t])
+                trY_sliced.append(teY[t])
             test_loss = sess.run(loss, feed_dict={X: trX_sliced, Y: trY_sliced})
-        print("Train Step: ", i)
-        print("Accuracy on train/test: %f/%f" % (np.mean(train_loss), np.mean(test_loss)))
+            print("Train Step: ", i)
+            print("Accuracy on train/test: %f/%f" % (np.mean(train_loss), np.mean(test_loss)))

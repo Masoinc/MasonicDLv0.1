@@ -21,9 +21,9 @@ X = tf.placeholder("float", [None, seq_size, vector_size])
 Y = tf.placeholder("float", [None, 1])
 
 W = {
-    "w1": tf.Variable(tf.random_normal([lstm_size, 30])),
-    "w2": tf.Variable(tf.random_normal([30, 20])),
-    "w3": tf.Variable(tf.random_normal([20, 10])),
+    "w1": tf.Variable(tf.random_normal([lstm_size, 50])),
+    "w2": tf.Variable(tf.random_normal([50, 25])),
+    "w3": tf.Variable(tf.random_normal([25, 10])),
     "w4": tf.Variable(tf.random_normal([10, 1])),
     "b1": tf.Variable(tf.random_normal([1])),
     "b2": tf.Variable(tf.random_normal([1])),
@@ -83,7 +83,6 @@ def nn(X, W, seq_size, vector_size):
             conv1 = tf.unstack(W['conv1'], axis=3)
             b = tf.unstack(W['conv1b'], axis=1)
             conv1 = tf.nn.tanh(tf.nn.conv1d(Batch_Slice, conv1[i], stride=1, padding="VALID") + b[i])
-            conv1 = tf.nn.dropout(conv1, keep_prob=0.9)
             # conv1[1, 11, 1]
 
             # Conv Layer2

@@ -30,18 +30,14 @@ Y = tf.placeholder("float", [None, 1])
 W = {
     "w1": tf.Variable(tf.random_normal([rnn_size, 30])),
     "w2": tf.Variable(tf.random_normal([30, 15])),
-    "w3": tf.Variable(tf.random_normal([15, 5])),
-    "w4": tf.Variable(tf.random_normal([5, 1])),
-    "w5": tf.Variable(tf.random_normal([7, 1])),
+    "w3": tf.Variable(tf.random_normal([15, 1])),
+    "w4": tf.Variable(tf.random_normal([11, 1])),
     "b1": tf.Variable(tf.random_normal([1])),
     "b2": tf.Variable(tf.random_normal([1])),
     "b3": tf.Variable(tf.random_normal([1])),
     "b4": tf.Variable(tf.random_normal([1])),
-    "b5": tf.Variable(tf.random_normal([1])),
     "conv1": tf.Variable(tf.random_normal([conv1_size, 1, 1, 2])),
     "conv1b": tf.Variable(tf.random_normal([1, 2])),
-    "conv2": tf.Variable(tf.random_normal([conv2_size, 1, 1, 2])),
-    "conv2b": tf.Variable(tf.random_normal([1, 2]))
 }
 
 
@@ -78,7 +74,7 @@ teX, teY = x[tr_num:], y[tr_num:]
 def nn(X, W, seq_size, vector_size):
     # X[batch_size=50, seq_size=15, vector_size=2]
     # conv
-    seq_size_afterconv = seq_size - conv1_size + 1 - conv2_size + 1
+    seq_size_afterconv = seq_size - conv1_size + 1
     conv = []
     for i in range(vector_size):
         Vec_Slice = tf.unstack(X, axis=2)[i]  # [None, 15]
@@ -97,16 +93,8 @@ def nn(X, W, seq_size, vector_size):
             # conv1[1, 11, 1]
             conv1 = tf.nn.max_pool(conv1, ksize=[1, 3, 1, 1], strides=[1, 1, 1, 1], padding="SAME")
             conv1 = tf.squeeze(conv1, axis=3)
-            # Conv Layer2
-            conv2 = tf.unstack(W['conv2'], axis=3)
-            b = tf.unstack(W['conv2b'], axis=1)
-            conv2 = tf.nn.tanh(tf.nn.conv1d(conv1, conv2[i], stride=1, padding="VALID") + b[i])
-            conv2 = tf.expand_dims(conv2, axis=2)
-            conv2 = tf.nn.max_pool(conv2, ksize=[1, 3, 1, 1], strides=[1, 1, 1, 1], padding="SAME")
-            conv2 = tf.squeeze(conv2, axis=3)
-            # conv2[1, 7, 1]
 
-            conv_per_batch.append(conv2)  # 50x[1, 7, 1]
+            conv_per_batch.append(conv1)  # 50x[1, 7, 1]
         conv_per_batch = tf.concat(conv_per_batch, 0)  # [50, 7, 1]
         conv.append(conv_per_batch)  # 2x[50, 7, 1]
     X = tf.concat(conv, 2)
@@ -136,16 +124,11 @@ def nn(X, W, seq_size, vector_size):
     w4 = tf.tile(input=w4, multiples=[tf.shape(outputs)[0], 1, 1])
     # outputs[50, 7, 15]
     fc1 = tf.nn.relu6(tf.matmul(outputs, w1) + b1)
-    # fc1[50, 7, 30]
     fc2 = tf.nn.relu6(tf.matmul(fc1, w2) + b2)
-    # fc1[50, 30, 20]
     fc3 = tf.nn.relu6(tf.matmul(fc2, w3) + b3)
-    # fc1[50, 20, 10]
-    fc4 = tf.nn.relu6(tf.matmul(fc3, w4) + b4)
-    # fc1[50, 10, 1]
-    fc5 = tf.squeeze(fc4)
+    fc5 = tf.squeeze(fc3)
     # y_[50, 10]
-    y_ = tf.nn.relu6(tf.matmul(fc5, W['w5']) + W['b5'])
+    y_ = tf.nn.relu6(tf.matmul(fc5, W['w4']) + W['b4'])
 
     return y_  # [50,1]
 
