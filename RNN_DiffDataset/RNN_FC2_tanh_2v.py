@@ -32,7 +32,8 @@ def normal(data):
 
 
 def get_multi():
-    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDB_headerless.csv", header=None,
+    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDB_noheader.csv",
+                       header=None,
                        skip_blank_lines=True)
     x, y = [], []
     for i in range(0, 10, 2):
