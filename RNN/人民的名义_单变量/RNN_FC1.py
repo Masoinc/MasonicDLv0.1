@@ -83,6 +83,7 @@ data = np.array(data)
 data = data.tolist()
 data_size = np.shape(data)[0]
 seq, pre = [], []
+
 for i in range(data_size - seq_size - 1):
     seq.append(data[i: i + seq_size])
     pre.append(data[i + seq_size])

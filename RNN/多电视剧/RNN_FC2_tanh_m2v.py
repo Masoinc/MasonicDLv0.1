@@ -2,14 +2,14 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 
-step = 2000
+step = 300
 
 seq_size = 10
 vector_size = 2
 batch_size = 50
 test_size = 15
 
-train_percent = 0.7
+train_percent = 0.9
 
 X = tf.placeholder("float", [None, seq_size, vector_size])
 Y = tf.placeholder("float", [None, 1])
@@ -30,11 +30,10 @@ def normal(data):
     data = (data - data.min()) / (data.max() - data.min())
     return data
 
-
-def get_multi():
-    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDB_noheader.csv",
-                       header=None,
+def get_seq():
+    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDB_noheader.csv", header=None,
                        skip_blank_lines=True)
+
     x, y = [], []
     for i in range(0, 10, 2):
         qi, si = normal(data[i]), normal(data[i + 1])
@@ -46,7 +45,7 @@ def get_multi():
     return x, y
 
 
-x, y = get_multi()
+x, y = get_seq()
 tr_num = int(train_percent * len(y))
 
 trX, trY = x[:tr_num], y[:tr_num]
@@ -79,13 +78,14 @@ with tf.Session() as sess:
             x = trX[begin:end]
             y = trY[begin:end]
             train_loss, _ = sess.run([loss, train_op], feed_dict={X: x, Y: y})
+        if i % 10 == 0:
             test_indices = np.arange(len(teX))
             np.random.shuffle(test_indices)
             test_indices = test_indices[0:test_size]
             trX_sliced, trY_sliced = [], []
             for t in test_indices:
-                trX_sliced.append(trX[t])
-                trY_sliced.append(trY[t])
-            test_loss = sess.run([loss], feed_dict={X: trX_sliced, Y: trY_sliced})
-        print("Train Step: ", i)
-        print("Accuracy on train/test: %f/%f" % (np.mean(train_loss), np.mean(test_loss)))
+                trX_sliced.append(teX[t])
+                trY_sliced.append(teY[t])
+            test_loss = sess.run(loss, feed_dict={X: trX_sliced, Y: trY_sliced})
+            print("Train Step: ", i)
+            print("Accuracy on train/test: %f/%f" % (np.mean(train_loss), np.mean(test_loss)))
