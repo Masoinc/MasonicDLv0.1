@@ -109,9 +109,10 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for step in range(train_step):
         _, train_loss = sess.run([train_op, loss], feed_dict={X: trX, Y: trY})
+        if train_loss < 0.0009:
+            test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
+            print(step, train_loss, test_loss)
+            break
         if step % 100 == 0:
             test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
             print(step, train_loss, test_loss)
-            # if step % 1000 == 0:
-            #     print(sess.run(y_, feed_dict={X: teX}))
-            #     print(teY)

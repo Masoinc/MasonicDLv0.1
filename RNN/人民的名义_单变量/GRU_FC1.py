@@ -28,7 +28,7 @@ seq_size = 10
 test_size = 5
 
 X = tf.placeholder(tf.float32, [None, seq_size, 1])
-Y = tf.placeholder(tf.float32, [None, 1])
+Y = tf.placeholder(tf.float32, [None, seq_size])
 
 W = {
     'w1': tf.Variable(tf.random_normal([hidden_layer_size, 15])),
@@ -56,13 +56,13 @@ def rnn(X, W):
     cell = tf.nn.rnn_cell.GRUCell(hidden_layer_size)
     outputs, states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
     fc1 = tf.nn.tanh(tf.matmul(outputs, w1) + b1)
-
     # y_[batch_size, seq_size, hidden_layer_size]
     fc2 = tf.nn.tanh(tf.matmul(fc1, w2) + b2)
     fc2 = tf.squeeze(fc2)
     y_ = tf.nn.tanh(tf.matmul(fc2, w3) + b3)
 
     return y_
+
 
 # def rnn(X, W):
 #     cell = tf.nn.rnn_cell.BasicLSTMCell(hidden_layer_size)
@@ -100,9 +100,11 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for step in range(train_step):
         _, train_loss = sess.run([train_op, loss], feed_dict={X: trX, Y: trY})
-        if (step % 100) == 0:
+        if train_loss < 0.0009:
             test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
             print(step, train_loss, test_loss)
-            if step % 1000 == 0:
-                print(sess.run(y_, feed_dict={X: teX}))
-                print(teY)
+            break
+        if step % 100 == 0:
+            test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
+            print(step, train_loss, test_loss)
+

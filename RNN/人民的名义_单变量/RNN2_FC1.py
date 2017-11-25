@@ -4,7 +4,6 @@ import pandas as pd
 import os
 import time
 
-
 # MasonicProject
 # 2017-7-8-0008
 # 使用LSTM模型预测人民的名义收视率
@@ -72,15 +71,6 @@ def rnn(X, W):
 
     return y_
 
-# def rnn(X, W):
-#     cell = tf.nn.rnn_cell.BasicLSTMCell(hidden_layer_size)
-#     outputs, states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
-#     y_ = tf.nn.tanh(tf.matmul(outputs[-1], W['w1']) + W['b1'])
-#     y_ = tf.nn.tanh(tf.matmul(y_, W['w2']) + W['b2'])
-#     y_ = tf.squeeze(y_)
-#
-#     return y_
-
 
 data = pd.read_csv(Datadir, header=None)
 
@@ -108,9 +98,10 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for step in range(train_step):
         _, train_loss = sess.run([train_op, loss], feed_dict={X: trX, Y: trY})
-        if (step % 100) == 0:
+        if train_loss < 0.0009:
             test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
             print(step, train_loss, test_loss)
-            # if step % 1000 == 0:
-                # print(sess.run(y_, feed_dict={X: teX}))
-                # print(teY)
+            break
+        if step % 100 == 0:
+            test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
+            print(step, train_loss, test_loss)

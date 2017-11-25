@@ -21,7 +21,6 @@ W = {
 
 data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\无证之罪.csv", header=None)
 data = data[1]
-
 # Normalization
 data = (data - data.min()) / (data.max() - data.min())
 

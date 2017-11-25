@@ -48,7 +48,6 @@ def normal(data):
 def rnn(X, W):
     w1, w2, w3 = W['w1'], W['w2'], W['w3']
     b1, b2, b3 = tf.expand_dims(W['b1'], axis=0), tf.expand_dims(W['b2'], axis=0), W['b3']
-
     w1 = tf.tile(input=tf.expand_dims(w1, axis=0), multiples=[tf.shape(X)[0], 1, 1])
     w2 = tf.tile(input=tf.expand_dims(w2, axis=0), multiples=[tf.shape(X)[0], 1, 1])
     b1 = tf.tile(input=tf.expand_dims(b1, axis=1), multiples=[tf.shape(X)[0], 1, 1])
@@ -69,6 +68,7 @@ def rnn(X, W):
     y_ = tf.nn.tanh(tf.matmul(fc2, w3) + b3)
 
     return y_
+
 
 # def rnn(X, W):
 #     cell = tf.nn.rnn_cell.BasicLSTMCell(hidden_layer_size)
@@ -106,9 +106,11 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for step in range(train_step):
         _, train_loss = sess.run([train_op, loss], feed_dict={X: trX, Y: trY})
-        if (step % 100) == 0:
+        if train_loss < 0.0009:
             test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
             print(step, train_loss, test_loss)
-            if step % 1000 == 0:
-                print(sess.run(y_, feed_dict={X: teX}))
-                print(teY)
+            break
+        if step % 100 == 0:
+            test_loss = sess.run(loss, feed_dict={X: teX, Y: teY})
+            print(step, train_loss, test_loss)
+
