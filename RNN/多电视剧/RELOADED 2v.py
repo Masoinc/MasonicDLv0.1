@@ -16,13 +16,13 @@ with tf.name_scope(name='Hyperparameter'):
 
     global_step = tf.Variable(0, name="global_step")
     learning_rate = tf.train.exponential_decay(
-        learning_rate=0.001,
+        learning_rate=0.01,
         global_step=global_step,
         decay_steps=30,
         decay_rate=0.9,
         staircase=True)
 
-    train_percent = 0.7
+    train_percent = 0.8
 with tf.name_scope(name='Placeholder'):
     X = tf.placeholder("float", [None, seq_size, vector_size])
     Y = tf.placeholder("float", [None, seq_size])
