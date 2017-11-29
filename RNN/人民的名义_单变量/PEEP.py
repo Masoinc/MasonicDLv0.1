@@ -25,7 +25,7 @@ with tf.name_scope(name='Hyperparameter'):
     reg = True
     reg_rate = 0.003
     hidden_layer_size = 10
-    seq_size = 10
+    seq_size = 8
     test_size = 5
 
 with tf.name_scope(name='Placeholder'):
@@ -70,9 +70,9 @@ with tf.name_scope(name='NeuralNetwork'):
         W_ = [w1, w2, w3]
 
         # cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=hidden_layer_size)
-        cell = tf.nn.rnn_cell.BasicRNNCell(num_units=hidden_layer_size)
-        # cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_layer_size, use_peepholes=True)
-        # outputs, states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
+        # cell = tf.nn.rnn_cell.BasicRNNCell(num_units=hidden_layer_size)
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_layer_size, use_peepholes=True)
+        outputs, states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
 
         # mcell = []
         # for layer in range(2):

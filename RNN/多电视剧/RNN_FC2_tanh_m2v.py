@@ -45,7 +45,7 @@ def normal(data):
 
 
 def get_seq():
-    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
+    data = pd.read_csv("G:\Idea\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
                        skip_blank_lines=True)
 
     x, y = [], []
@@ -128,7 +128,7 @@ with tf.Session() as sess:
             y = trY[begin:end]
             train_loss, _ = sess.run([loss, train_op], feed_dict={X: x, Y: y})
             loss_sum += train_loss
-        if i % 10 == 0:
+        if i % 100 == 0 and i > 1:
             test_indices = np.arange(len(teX))
             np.random.shuffle(test_indices)
             test_indices = test_indices[0:test_size]
@@ -143,7 +143,7 @@ with tf.Session() as sess:
             if i % 1000 == 0:
                 preY = sess.run(y_, feed_dict={X: trX_sliced})
                 realY = np.array(trY_sliced)
-                realY=np.squeeze(realY)
+                realY = np.squeeze(realY)
                 x_axis = np.arange(0, 22)
 
                 plt.figure(figsize=(16, 10))

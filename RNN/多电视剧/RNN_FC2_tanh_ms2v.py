@@ -10,7 +10,7 @@ plt_title = "RNN_FC2 Multi Sample Model for 《继承人》"
 
 step = 6501
 
-seq_size = 8
+seq_size = 5
 vector_size = 2
 batch_size = 50
 test_size = 50
@@ -28,14 +28,15 @@ learning_rate = tf.train.exponential_decay(
     decay_rate=0.9,
     staircase=True)
 
+hidden_layer_size = 5
 X = tf.placeholder("float", [None, seq_size, vector_size])
 Y = tf.placeholder("float", [None, 1])
 
 W = {
-    "w1": tf.Variable(tf.random_normal([10, 50])),
-    "w2": tf.Variable(tf.random_normal([50, 25])),
-    "w3": tf.Variable(tf.random_normal([25, 10])),
-    "w4": tf.Variable(tf.random_normal([10, 1])),
+    "w1": tf.Variable(tf.random_normal([hidden_layer_size, 15])),
+    "w2": tf.Variable(tf.random_normal([15, 8])),
+    "w3": tf.Variable(tf.random_normal([8, 1])),
+    "w4": tf.Variable(tf.random_normal([5, 1])),
     "b1": tf.Variable(tf.random_normal([1])),
     "b2": tf.Variable(tf.random_normal([1])),
     "b3": tf.Variable(tf.random_normal([1])),
@@ -49,7 +50,7 @@ def normal(data):
 
 
 def get_seq():
-    data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
+    data = pd.read_csv("G:\Idea\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
                        skip_blank_lines=True)
 
     x, y = [], []
@@ -65,7 +66,7 @@ def get_seq():
 
 # sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\无证之罪 2v_partI.csv", header=None)
 # sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\继承人 2v.csv", header=None)
-sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\人间至味是清欢 2v.csv", header=None)
+# sample = pd.read_csv("G:\Idea\MasonicDLv0.1\Database\人间至味是清欢 2v.csv", header=None, skip_blank_lines=True)
 
 x, y = get_seq()
 tr_num = int(train_percent * len(y))
@@ -78,12 +79,17 @@ def nn(X, W, seq_size, vector_size):
     X = tf.transpose(X, [1, 0, 2])
     X = tf.reshape(X, [-1, vector_size])
     X = tf.split(X, seq_size, 0)
-    cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=10)
+    # cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=hidden_layer_size)
+    # cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_layer_size)
+    cell = tf.nn.rnn_cell.LSTMCell(num_units=hidden_layer_size, use_peepholes=True)
     outputs, _ = tf.nn.static_rnn(cell, X, dtype=tf.float32)
+    # X[[batch_size, 2], ..., seq_size=8]
+    # outputs[[batch_size, num_units=10], ..., xseq_size=8]
     y_ = tf.nn.tanh(tf.matmul(outputs[-1], W["w1"]) + W["b1"])
+    # outputs[-1] = [batch_size, num_units=10]
     y_ = tf.nn.tanh(tf.matmul(y_, W["w2"]) + W["b2"])
     y_ = tf.nn.tanh(tf.matmul(y_, W["w3"]) + W["b3"])
-    y_ = tf.nn.tanh(tf.matmul(y_, W["w4"]) + W["b4"])
+    # y_ = tf.nn.tanh(tf.matmul(y_, W["w4"]) + W["b4"])
 
     W_ = [W['w1'], W['w2'], W['w3'], W['w4']]
 
