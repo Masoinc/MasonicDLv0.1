@@ -28,7 +28,6 @@ with tf.name_scope(name='Hyperparameter'):
         decay_rate=0.9,
         staircase=True)
 
-
 with tf.name_scope(name='Placeholder'):
     X = tf.placeholder("float", [None, seq_size, vector_size])
     Y = tf.placeholder("float", [None, 1])
@@ -51,7 +50,7 @@ with tf.name_scope(name='DataProcessing'):
 
 
     def get_seq():
-        data = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
+        data = pd.read_csv("G:\Idea\MasonicDLv0.1\Database\MultiDBpartI_noheader.csv", header=None,
                            skip_blank_lines=True)
         x, y = [], []
         for i in range(0, 10, 2):
@@ -64,8 +63,8 @@ with tf.name_scope(name='DataProcessing'):
         return x, y
 
 # sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\无证之罪 2v_partI.csv", header=None)
-# sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\继承人 2v.csv", header=None)
-sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\人间至味是清欢 2v.csv", header=None)
+# sample = pd.read_csv("E:\PyCharmProjects\MasonicDLv0.1\Database\Sample_JiChengRen.csv", header=None)
+sample = pd.read_csv("G:\Idea\MasonicDLv0.1\Database\人间至味是清欢 2v.csv", header=None)
 
 x, y = get_seq()
 tr_num = int(train_percent * len(y))
@@ -93,7 +92,6 @@ with tf.name_scope(name='NeuralNetwork'):
         W_ = [W['w1'], W['w2'], W['w3'], W['w4']]
 
         return y_, W_
-
 
 y_, W_ = nn(X, W, seq_size, vector_size)
 if reg:
